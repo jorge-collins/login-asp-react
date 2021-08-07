@@ -1,13 +1,13 @@
-import React, { useState } from "react";
-import md from "md5";
+import React, { useState, useEffect } from "react";
+// import md from "md5";
 import "bootstrap/dist/css/bootstrap.min.css";
 import Cookies from "universal-cookie";
 import axios from "axios";
 import "../css/Login.css";
 
 function Login(props) {
-    const baseUrl =
-        "https://eventos.cibnor.mx/registro/WSapiRegistros/api/login";
+    //const baseUrl = "https://eventos.cibnor.mx/registro/WSapiRegistros/api/login";
+    const baseUrl = "https://localhost:44335/api/login";
     const cookies = new Cookies();
 
     const [form, setForm] = useState({
@@ -22,7 +22,6 @@ function Login(props) {
             ...form,
             [name]: value,
         });
-        // console.log(form);
     };
 
     const iniciarSesion = async () => {
@@ -31,41 +30,44 @@ function Login(props) {
             Password: form.password,
         });
 
+        // Esta solucion si funciona
         const config = {
             method: "post",
             url: baseUrl,
             headers: {
                 "Content-Type": "application/json",
-                Authorization:
-                    "Bearer erobnerobg808354954qgnrvnaerv5gnq349gnrvfakvnvbjnthg854gh.erobnerobg808354954qgnrvnaerv5gnq349gnrvfakvnvbjnthg854gh.erobnerobg808354954qgnrvnaerv5gnq349gnrvfakvnvbjnthg854gh",
             },
             data: data,
         };
 
         axios(config)
-            .then(function (response) {
-                console.log(JSON.stringify(response.data));
-            })
-            .catch(function (error) {
-                console.log(error);
-            });
-        /*         await axios
-            .get(baseUrl + `/${form.username}/${md(form.password)}`)
             .then((response) => {
+                // Response completa con "data", "status", "headers", etc
                 return response.data;
             })
             .then((response) => {
-                if (response.length > 0) {
-                    var respuesta = response[0];
-                    console.log(respuesta);
+                // Response del API con "exito", "mensaje" y "data" 
+                if (response.exito === 1) {
+                    // Respuesta con "email" y "token" 
+                    const respuesta = response.data;
+                    cookies.set('email', respuesta.email, { path: '/' });
+                    cookies.set('token', respuesta.token, { path: '/' });
+                    // alert("Bienvenido");
+                    props.history.push('./menu');
                 } else {
-                    alert('Los datos de acceso no son correctos');
+                    alert(response.mensaje);
                 }
             })
             .catch((error) => {
                 console.log(error);
-            }); */
+            });
     };
+
+    useEffect(() => {
+        if (cookies.get('email')) {
+            props.history.push('./menu');
+        }
+    })
 
     return (
         <div className="containerPrincipal">
