@@ -6,8 +6,12 @@ import axios from "axios";
 import "../css/Login.css";
 
 function Login(props) {
-    //const baseUrl = "https://eventos.cibnor.mx/registro/WSapiRegistros/api/login";
-    const baseUrl = "https://localhost:44335/api/login";
+
+    // const baseUrl = "https://eventos.cibnor.mx/registro/WSapiRegistros/api/login";
+    //const baseUrl = "https://localhost:44335/api/login";
+
+    // Se agrego en package.json la clave-valor "proxy" con el dominio y como url se deja lo demas excepto el dominio
+    const baseUrl = "/registro/WSapiRegistros/api/login";
     const cookies = new Cookies();
 
     const [form, setForm] = useState({
