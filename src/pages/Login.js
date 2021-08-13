@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-// import md from "md5";
 import "bootstrap/dist/css/bootstrap.min.css";
 import Cookies from "universal-cookie";
 import axios from "axios";
@@ -19,6 +18,7 @@ function Login(props) {
         password: "",
     });
 
+    // Cambios en los textboxes del formulario
     const handleChange = (e) => {
         const { name, value } = e.target;
 
@@ -28,13 +28,14 @@ function Login(props) {
         });
     };
 
+    // Al presionar enviar en el formulario
     const iniciarSesion = async () => {
         const data = JSON.stringify({
             Email: form.username,
             Password: form.password,
         });
 
-        // Esta solucion si funciona
+        // Config para el axios
         const config = {
             method: "post",
             url: baseUrl,
