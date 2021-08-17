@@ -1,0 +1,9 @@
+input {
+    margin-bottom: 4px;
+    margin-top: 4px;
+}
+
+form button {
+    width: 100%;
+    margin-top: 4px;
+}

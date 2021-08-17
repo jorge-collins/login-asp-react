@@ -1,9 +1,37 @@
-import React, { useEffect, useState } from "react";
-import * as ReactBootstrap from "react-bootstrap";
+ import React, { useEffect, useState, useContext } from "react";
+import { Button, Table, Modal } from "react-bootstrap";
+import AddFormComp from "../../components/AddFormComp";
 import * as QueryServices from "../../services/QueryServices";
+import { ExpocienciasContext } from '../../contexts/ExpocienciasContext';
+
+import { AiOutlineEdit, AiOutlineDelete } from 'react-icons/ai';
 
 export default function Expociencias() {
+
+    const { eliminarParticipante } = useContext(ExpocienciasContext);
+
     const [APIData, setAPIData] = useState([]);
+
+    const [show, setShow] = useState(false);
+    const handleShow = () => setShow(true);
+    const handleClose = () => setShow(false);
+
+    const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+    const handleShowDeleteDialog = (item) => {
+        console.log(item.id);
+        setItemId(item.id);
+        setShowDeleteDialog(true);
+    };
+    const handleCloseDeleteDialog = () => setShowDeleteDialog(false);
+
+    const [itemId, setItemId] = useState('');    
+
+    const handleDeleteConfirm = () => {
+        // console.log("id", itemId);
+        eliminarParticipante(itemId);
+        loadTable();
+        handleCloseDeleteDialog();
+    }
 
     const loadTable = async () => {
         const { data } = await QueryServices.getRegisters(
@@ -11,38 +39,17 @@ export default function Expociencias() {
         );
         setAPIData(data);
         // console.log(data);
-    };
+    }; 
 
     useEffect(() => {
         loadTable();
     }, []);
 
-    const replaceModalItem = (index) => {
-        console.log("Id", index);
-    }
-
     return (
         <>
             <div className="containerTable">
-
-                <div className="table-title">
-                    <div className="row">
-                        <div className="col-sm-6">
-                            <h2>Expociencias</h2>
-                        </div>
-                        
-                        <div className="col-sm-6">
-                            <ReactBootstrap.Button href="#addModal" className="btn btn-success" data-toggle="modal">
-                                <span>+ Agregar</span>
-                            </ReactBootstrap.Button>
-                        </div>
-
-                    </div>
-                </div>
-
-                <ReactBootstrap.Table striped bordered hover>
+                <Table striped bordered hover>
                     <thead>
-
                         <tr>
                             <th>Clave</th>
                             <th>Nombre completo</th>
@@ -59,25 +66,59 @@ export default function Expociencias() {
                                     <td>{item.nombreEst1}</td>
                                     <td>{item.correoEst1}</td>
                                     <td>
-                                        <button
+                                        <Button
                                             className="btn btn-primary"
-                                            data-toggle="modal"
                                             data-target="#exampleModal"
-                                            onClick={ () => replaceModalItem(item.id) }
+                                            data-toggle="modal"
+                                            onClick={ handleShow }
+                                            size="sm"
                                         >
-                                            Detalles
-                                        </button>
+                                        <AiOutlineEdit tooltip="Editar" />
+                                        </Button>
                                     </td>
                                     <td>
-                                        <ReactBootstrap.Button variant="outline-danger">
-                                            Eliminar
-                                        </ReactBootstrap.Button>
+                                        <Button
+                                            onClick={() => handleShowDeleteDialog(item) }
+                                            size="sm"
+                                            variant="outline-danger"
+                                        >
+                                            <AiOutlineDelete />
+                                        </Button>
                                     </td>
                                 </tr>
                             ))}
                     </tbody>
-                </ReactBootstrap.Table>
+                </Table>
             </div>
+
+            {/* Modal de agregar participante */}
+            <Modal show={show} onHide={handleClose}>
+                <Modal.Header>
+                    <Modal.Title>Edit</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    <AddFormComp />
+                </Modal.Body>
+                <Modal.Footer>
+                    <Button variant="secondary" onClick={handleClose}>
+                        Cancelar
+                    </Button>
+                </Modal.Footer>
+            </Modal>
+
+            {/* Modal de eliminar participante */}
+            <Modal show={ showDeleteDialog } onHide={ handleCloseDeleteDialog }>
+                <Modal.Header>
+                    <Modal.Title>Confirmación</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    <p>¿Eliminar el registro? Esta acción no se puede deshacer.</p>
+                </Modal.Body>
+                <Modal.Footer>
+                    <Button variant="outline-secondary" onClick={ handleCloseDeleteDialog }>Cancelar</Button>
+                    <Button variant="danger" onClick={ handleDeleteConfirm }>Eliminar</Button>
+                </Modal.Footer>
+            </Modal>
         </>
     );
 }
