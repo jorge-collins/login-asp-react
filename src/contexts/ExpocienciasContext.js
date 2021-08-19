@@ -1,40 +1,61 @@
 import { createContext } from "react";
 import * as QueryServices from "../services/QueryServices";
 
-export const ExpocienciasContext = createContext()
+export const ExpocienciasContext = createContext();
 
 const ExpocienciasContextProvider = (props) => {
-
-
-/*     const [participantes] = useState([
-        {id:1, nombreEst1:'Hardy', correoEst1:' hardy@gmail.com', comentarios:'unknow', telefonoEst1:'1112223344'}
-    ]) */
-
-    const agregarParticipante = async( props ) => {
+    const agregarParticipante = async (props) => {
         const { nombreEst1, correoEst1, telefonoEst1, comentarios } = props;
-        
+
         const { data } = await QueryServices.postRegister(
-            `/registro/WSapiRegistros/api/Expociencias`, { nombreEst1, correoEst1, telefonoEst1, comentarios }
+            `/registro/WSapiRegistros/api/Expociencias`,
+            { nombreEst1, correoEst1, telefonoEst1, comentarios }
         );
         console.log(data);
     };
 
-    const eliminarParticipante = async(id) => {
-        // console.log("eliminar", id);
-        const {result} = await QueryServices.deleteRegister(`/registro/WSapiRegistros/api/Expociencias/`, id);
-        console.log(result);
-    }
+    const eliminarParticipante = async (id) => {
+        await QueryServices.deleteRegister(
+            `/registro/WSapiRegistros/api/Expociencias/`,
+            id
+        );
+        /*         const { result } = await QueryServices.deleteRegister(
+            `/registro/WSapiRegistros/api/Expociencias/`,
+            id
+        );
+        console.log(result); */
+    };
 
-    const actualizarParticipante = async(props) => {
-        
-    }
+    const actualizarParticipante = async (item) => {
+        await QueryServices.updateRegister(
+            `/registro/WSapiRegistros/api/Expociencias`,
+            item
+        );
+        /*         const { result } = await QueryServices.updateRegister(
+            `/registro/WSapiRegistros/api/Expociencias`,
+            item
+        );
+        console.log(result); */
+    };
 
+    const obtenerParticipantes = async () => {
+        await QueryServices.getRegisters(
+            `/registro/WSapiRegistros/api/Expociencias`
+        );
+    }
 
     return (
-        <ExpocienciasContext.Provider value={{ agregarParticipante, eliminarParticipante }}>
+        <ExpocienciasContext.Provider
+            value={{
+                agregarParticipante,
+                eliminarParticipante,
+                actualizarParticipante,
+                obtenerParticipantes,
+            }}
+        >
             {props.children}
         </ExpocienciasContext.Provider>
-    )
-}
+    );
+};
 
 export default ExpocienciasContextProvider;
