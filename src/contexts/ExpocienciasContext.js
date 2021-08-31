@@ -19,11 +19,6 @@ const ExpocienciasContextProvider = (props) => {
             `/registro/WSapiRegistros/api/Expociencias/`,
             id
         );
-        /*         const { result } = await QueryServices.deleteRegister(
-            `/registro/WSapiRegistros/api/Expociencias/`,
-            id
-        );
-        console.log(result); */
     };
 
     const actualizarParticipante = async (item) => {
@@ -31,11 +26,6 @@ const ExpocienciasContextProvider = (props) => {
             `/registro/WSapiRegistros/api/Expociencias`,
             item
         );
-        /*         const { result } = await QueryServices.updateRegister(
-            `/registro/WSapiRegistros/api/Expociencias`,
-            item
-        );
-        console.log(result); */
     };
 
     const obtenerParticipantes = async () => {

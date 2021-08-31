@@ -1,13 +1,17 @@
 import React, { useEffect, useState, useContext } from "react";
+import Cookies from "universal-cookie";
 import { Button, Table, Modal } from "react-bootstrap";
 // import AddFormComp from "../../components/AddFormComp";
 import EditFormComp from "../../components/EditFormComp";
+import FormatISOFormComp from "../../components/FormatISOFormComp";
 import * as QueryServices from "../../services/QueryServices";
 import { ExpocienciasContext } from "../../contexts/ExpocienciasContext";
 
 import { AiOutlineEdit, AiOutlineDelete } from "react-icons/ai";
 
-export default function Expociencias() {
+export default function Expociencias(props) {
+    const cookies = new Cookies();
+
     const { eliminarParticipante } = useContext(ExpocienciasContext);
 
     const [APIData, setAPIData] = useState([]);
@@ -19,10 +23,31 @@ export default function Expociencias() {
 
     // for update dialog
     const [showEdit, setShowEdit] = useState(false);
-
     const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+    const [showFormatoISO, setShowFormatoISO] = useState(false);
 
     const [currentItem, setCurrentItem] = useState([]);
+
+    const loadTable = async () => {
+        const { data } = await QueryServices.getRegisters(
+            `/registro/WSapiRegistros/api/Expociencias`
+        );
+        setAPIData(data);
+
+        // console.log(data);
+    };
+
+    useEffect(() => {
+        loadTable();
+    }, []);
+
+    // Si aun no se inicia sesion, ir al login(./)
+    useEffect(() => {
+        if (!cookies.get("email")) {
+            props.history.push("./");
+        }
+    });
+    
 
     const handleShowEdit = (item) => {
         setCurrentItem(item);
@@ -44,18 +69,12 @@ export default function Expociencias() {
         handleCloseDeleteDialog();
     };
 
-    const loadTable = async () => {
-        const { data } = await QueryServices.getRegisters(
-            `/registro/WSapiRegistros/api/Expociencias`
-        );
-        setAPIData(data);
-
-        // console.log(data);
+    const handleShowFormatoISO = (item) => {
+        // console.log("onClick", item)
+        setCurrentItem(item);
+        setShowFormatoISO(true);
     };
-
-    useEffect(() => {
-        loadTable();
-    }, []);
+    const handleCloseFormatoISO = () => setShowFormatoISO(false);
 
     return (
         <>
@@ -79,15 +98,25 @@ export default function Expociencias() {
                                     <td>{item.correoEst1}</td>
                                     <td>
                                         <Button
-                                            onClick={() => handleShowEdit(item)}
+                                            onClick={() =>
+                                                handleShowFormatoISO(item)
+                                            }
                                             size="sm"
-                                            variant="outline-primary"
-                                            tooltip="Editar" 
+                                            variant="outline-secondary"
+                                            tooltip="Editar"
                                         >
-                                            <AiOutlineEdit />
+                                            Formato ISO
                                         </Button>
                                     </td>
                                     <td>
+                                        <Button
+                                            onClick={() => handleShowEdit(item)}
+                                            size="sm"
+                                            variant="outline-primary"
+                                            tooltip="Editar"
+                                        >
+                                            <AiOutlineEdit />
+                                        </Button>{" "}
                                         <Button
                                             onClick={() =>
                                                 handleShowDeleteDialog(item)
@@ -103,6 +132,30 @@ export default function Expociencias() {
                     </tbody>
                 </Table>
             </div>
+
+            {/* Modal para el formato */}
+            <Modal
+                size="lg"
+                show={showFormatoISO}
+                onHide={handleCloseFormatoISO}
+                backdrop="static"
+                keyboard={false}
+            >
+                <Modal.Header>
+                    <Modal.Title>Formato ISO</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    <FormatISOFormComp item={currentItem} />
+                </Modal.Body>
+                <Modal.Footer>
+                    <Button
+                        variant="outline-danger"
+                        onClick={handleCloseFormatoISO}
+                    >
+                        Cerrar
+                    </Button>
+                </Modal.Footer>
+            </Modal>
 
             {/* Modal de actualizar participante */}
             <Modal show={showEdit} onHide={handleCloseEdit}>

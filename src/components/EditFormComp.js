@@ -5,6 +5,7 @@ import "../css/Form.css";
 import { ExpocienciasContext } from "../contexts/ExpocienciasContext";
 
 const EditFormComp = ({ item }) => {
+    console.log(item);
     const { actualizarParticipante } = useContext(ExpocienciasContext);
 
     const [itemForUpdate, setItemForUpdate] = useState(item);
